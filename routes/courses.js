@@ -14,47 +14,50 @@ function asyncHandler(cb) {
   }
 };
 
-// setup a friendly greeting for the root route
-router.get('/', (req, res) => {
-  res.json({ message: "REST API project"})
-});
-
 // Send a GET request to /api/courses to READ a list of courses and their user owners
 router.get('/', asyncHandler(async (req, res, next) => {
-    Courses.findAll({order: [["createdAt", "DESC"]]}).then((courses) => {
-      res.render("courses/index", {courses: courses, users: users});
+    Course.findAll({
+      attributes: ['id', 'title', 'description', 'estimatedTime', 'materialsNeeded', 'userId'],
+      include: [{model: User,
+               attributes: ['id', 'firstName', 'lastName', 'emailAddress']}]})
+      .then((courses) => {
+      res.status(200).json ({ courses: courses });
     }).catch((err) => {
-      res.send(500);
+      next(err);
     });
 }));
 
 // Send a GET request to /api/courses/:id to READ a course by ID and its matching user
 router.get('/:id', asyncHandler(async (req, res, next) => {
-    Course.findByPk(req.params.id).then((course => {
-      if(course) {
-      res.render("courses/show", {course: course, user: course.user});
+    Course.findOne({
+      where: { id: req.params.id},
+      attributes: ['id', 'title', 'description', 'estimatedTime', 'materialsNeeded', 'userId'],
+      include: [{model: User,
+               attributes: ['id', 'firstName', 'lastName', 'emailAddress']}]})
+      .then((course) => {
+        if(course) {
+          res.status(200).json({ course: course});
       } else {
-        res.send(404);
+        err.status = 400;
+        next(err);
       }
-    }).catch((err) => {
-      res.send(500);
-    }));
+  });
 }));
 
 // Send a POST request to /api/courses to CREATE a new course, sets Location header to course URI
 router.post('/', asyncHandler(async(req, res, next) => {
-  if(req.body.course && req.body.user){
+  if(req.body.title && req.body.description){
     Course.create(req.body)
       .then(course => {
         res.redirect('/api/courses/' + course.id);
         res.status(201).end();
       }).catch((err) => {
         if(err.name === "SequelizeValidationError") {
-          res.render("courses/new", {
+          res.json("courses/new", {
             course: Course.build(req.body),
-            user: "New User",
-            error: err.errors
-          });
+            title: "New Course",
+      //      err: err.errors
+        });
         } else {
           throw err;
         }
@@ -71,7 +74,7 @@ router.put('/:id', asyncHandler(async(req, res, next) => {
       if(course) {
         return course.update(req.body);
       } else {
-        res.send(404);
+        throw err;
       }
     }).then((course) => {
         res.redirect("/courses/" + course.id);
@@ -79,7 +82,7 @@ router.put('/:id', asyncHandler(async(req, res, next) => {
       if(err.name === "SequelizeValidationError"){
         const course = Course.build(req.body);
         course.id = req.params.id;
-        res.render("courses/edit", {
+        res.json("courses/edit", {
           course: course,
           user: "Edit User",
           errors: err.errors
@@ -88,21 +91,22 @@ router.put('/:id', asyncHandler(async(req, res, next) => {
         throw err;
       }
     }).catch((err) => {
-      res.send(500);
+      next(err);
     });
 }));
+
 // Send a DELETE request to /api/courses/:id to DELETE a course
 router.delete("/:id", asyncHandler(async(req, res, next) => {
     Course.findByPk(req.params.id).then((course) => {
       if(course){
         return course.destroy();
       } else {
-        res.send(404);
+        throw err;
       }
     }).then(()=> {
         res.redirect("/courses");
     }).catch((err) => {
-      res.send(500);
+       next(err);
     });
 }));
 
