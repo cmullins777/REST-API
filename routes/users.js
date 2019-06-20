@@ -29,6 +29,9 @@ router.post('/', (req, res, next) => {
             res.status(201).end();
         }).catch((err) => {
             if(err.name === "SequelizeValidationError") {
+            //res.json("users/new", {
+            //    user: User.build(req.body),
+            //    err: err.errors
             } else {
               throw err;
             }
