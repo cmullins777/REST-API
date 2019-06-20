@@ -43,7 +43,7 @@ app.use(express.urlencoded({ extended: false }));
 const enableGlobalErrorLogging = process.env.ENABLE_GLOBAL_ERROR_LOGGING === 'true';
 
 // Setup api routes
-//app.use('/api', require('./routes/index'));
+app.use('/api', require('./routes/index'));
 app.use('/api/courses', require('./routes/courses'));
 app.use('/api/users', require('./routes/users'));
 

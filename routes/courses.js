@@ -46,58 +46,60 @@ router.get('/:id', asyncHandler(async (req, res, next) => {
 
 // Send a POST request to /api/courses to CREATE a new course, sets Location header to course URI
 router.post('/', asyncHandler(async(req, res, next) => {
-  if(req.body.title && req.body.description){
     Course.create(req.body)
       .then(course => {
         res.redirect('/api/courses/' + course.id);
         res.status(201).end();
       }).catch((err) => {
         if(err.name === "SequelizeValidationError") {
-          res.json("courses/new", {
-            course: Course.build(req.body),
-            title: "New Course",
+          res.status(400).json({
             err: err.errors
         });
-        } else {
-          throw err;
+      } else {
+          err.status = 500;
+          next(err);
         }
-      }).catch(err => {
-        err.status = 400;
-        next(err);
       });
-     }
 }));
 
 // Send a PUT request to /api/courses/:id to UPDATE a course
 router.put('/:id', asyncHandler(async(req, res, next) => {
-    Course.findByPk(req.params.id).then((course) => {
-      if(course) {
-        return course.update(req.body);
-      } else {
-        throw err;
-      }
+  Course.findOne({
+    where: { id: req.body.id }
     }).then((course) => {
+      if(course) {
+        const updateCourse = {
+          id: req.body.id,
+          title: req.body.title,
+          description: req.body.description,
+          estimatedTime: req.body.estimatedTime,
+          materialsNeeded: req.body.materialsNeeded,
+          userId: req.currentUser.id
+        };
+        course.update(req.body);
         res.redirect("/courses/" + course.id);
+        res.status(204).end();
+    } else {
+        err.status = 400;
+        next(err);
+    }
     }).catch((err) => {
-      if(err.name === "SequelizeValidationError"){
-        const course = Course.build(req.body);
-        course.id = req.params.id;
-        res.json("courses/edit", {
-          course: course,
-          user: "Edit User",
-          errors: err.errors
-        });
-      } else {
-        throw err;
+      if(err.name === "SequelizeValidationError") {
+        res.status(400).json({
+          err: err.errors
+      });
+    } else {
+        err.status = 500;
+        next(err);
       }
-    }).catch((err) => {
-      next(err);
     });
 }));
 
 // Send a DELETE request to /api/courses/:id to DELETE a course
 router.delete("/:id", asyncHandler(async(req, res, next) => {
-    Course.findByPk(req.params.id).then((course) => {
+  Course.findOne({
+    where: { id: req.params.id},
+    }).then((course) => {
       if(course){
         return course.destroy();
       } else {

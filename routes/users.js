@@ -6,7 +6,7 @@ const Sequelize = require('sequelize');
 
 // Send a GET request to /api/users to return the currently authenticated user
 router.get('/', (req, res, next) => {
-User.findOne({attributes: ['id', 'firstName', 'lastName', 'emailAddress', 'password']})
+  User.findOne({ where: { emailAddress: req.body.emailAddress } })
   .then((users) => {
   res.status(200).json({ users });
 }).catch((err) => {
@@ -16,7 +16,6 @@ User.findOne({attributes: ['id', 'firstName', 'lastName', 'emailAddress', 'passw
 
 // Send a POST request to /api/users to CREATE a new user, sets Location header to "/", returns no content
 router.post('/', (req, res, next) => {
-  User.findOne({ where: { emailAddress: req.body.emailAddress } })
     const newUser = {
       firstName: req.body.firstName,
       lastName: req.body.lastName,
@@ -29,15 +28,13 @@ router.post('/', (req, res, next) => {
             res.status(201).end();
         }).catch((err) => {
             if(err.name === "SequelizeValidationError") {
-            //res.json("users/new", {
-            //    user: User.build(req.body),
-            //    err: err.errors
+              res.json({
+                err: err.errors
+              })
             } else {
-              throw err;
+              err.status = 400;
+              next(err);
             }
-          }).catch(err => {
-            err.status = 400;
-            next(err);
           })
     });
 
