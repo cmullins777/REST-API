@@ -36,7 +36,7 @@ router.get('/:id', asyncHandler(async (req, res, next) => {
                attributes: ['id', 'firstName', 'lastName', 'emailAddress']}]})
       .then((course) => {
         if(course) {
-          res.status(200).json({ course: course});
+          res.status(200).json({ course: course });
       } else {
         err.status = 400;
         next(err);

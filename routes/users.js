@@ -8,7 +8,7 @@ const Sequelize = require('sequelize');
 router.get('/', (req, res, next) => {
 User.findOne({attributes: ['id', 'firstName', 'lastName', 'emailAddress', 'password']})
   .then((users) => {
-  res.status(200).json ({ users });
+  res.status(200).json({ users });
 }).catch((err) => {
   next(err);
 });
