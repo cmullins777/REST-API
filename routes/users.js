@@ -16,28 +16,26 @@ User.findOne({attributes: ['id', 'firstName', 'lastName', 'emailAddress', 'passw
 
 // Send a POST request to /api/users to CREATE a new user, sets Location header to "/", returns no content
 router.post('/', (req, res, next) => {
-  User//.findOne({ where: { emailAddress: req.body.emailAddress } })
-  .then(user => {
-      const newUser = {
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        emailAddress: req.body.emailAddress,
-        password: req.body.password
+  User.findOne({ where: { emailAddress: req.body.emailAddress } })
+    const newUser = {
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      emailAddress: req.body.emailAddress,
+      password: req.body.password
       };
-      User.create(newUser)
-        .then (() => {
-          res.location('/');
-          res.status(201).end();
-        })
-      }).catch((err) => {
-        if(err.name === "SequelizeValidationError") {
-        } else {
-          throw err;
-        }
-      }).catch(err => {
-        err.status = 400;
-        next(err);
-      })
-});
+        User.create(newUser)
+          .then (() => {
+            res.location('/');
+            res.status(201).end();
+        }).catch((err) => {
+            if(err.name === "SequelizeValidationError") {
+            } else {
+              throw err;
+            }
+          }).catch(err => {
+            err.status = 400;
+            next(err);
+          })
+    });
 
 module.exports = router;

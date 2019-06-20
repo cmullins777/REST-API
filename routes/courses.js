@@ -56,7 +56,7 @@ router.post('/', asyncHandler(async(req, res, next) => {
           res.json("courses/new", {
             course: Course.build(req.body),
             title: "New Course",
-      //      err: err.errors
+            err: err.errors
         });
         } else {
           throw err;
