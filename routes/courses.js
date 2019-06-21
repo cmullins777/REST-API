@@ -68,14 +68,6 @@ router.put('/:id', asyncHandler(async(req, res, next) => {
     where: { id: req.body.id }
     }).then((course) => {
       if(course) {
-        const updateCourse = {
-          id: req.body.id,
-          title: req.body.title,
-          description: req.body.description,
-          estimatedTime: req.body.estimatedTime,
-          materialsNeeded: req.body.materialsNeeded,
-          userId: req.currentUser.id
-        };
         course.update(req.body);
         res.location("/courses/" + req.body.id);
         res.status(204).end();
