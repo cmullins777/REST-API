@@ -27,6 +27,7 @@ router.post('/', (req, res, next) => {
             res.location('/');
             res.status(201).end();
         }).catch((err) => {
+          console.log(err);
             if(err.name === "SequelizeValidationError") {
                 res.status(400).json({
                 err: err.errors
