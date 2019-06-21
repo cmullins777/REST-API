@@ -30,7 +30,7 @@ router.get('/', asyncHandler(async (req, res, next) => {
 // Send a GET request to /api/courses/:id to READ a course by ID and its matching user
 router.get('/:id', asyncHandler(async (req, res, next) => {
     Course.findOne({
-      where: { id: req.params.id},
+      where: { id: req.params.id },
       attributes: ['id', 'title', 'description', 'estimatedTime', 'materialsNeeded', 'userId'],
       include: [{model: User,
                attributes: ['id', 'firstName', 'lastName', 'emailAddress']}]})
@@ -77,7 +77,7 @@ router.put('/:id', asyncHandler(async(req, res, next) => {
           userId: req.currentUser.id
         };
         course.update(req.body);
-        res.redirect("/courses/" + course.id);
+        res.location("/courses/" + req.body.id);
         res.status(204).end();
     } else {
         err.status = 400;
