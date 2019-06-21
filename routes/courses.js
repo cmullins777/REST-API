@@ -76,6 +76,7 @@ router.put('/:id', asyncHandler(async(req, res, next) => {
         next(err);
     }
     }).catch((err) => {
+      console.log(err);
       if(err.name === "SequelizeValidationError") {
         res.status(400).json({
           err: err.errors
