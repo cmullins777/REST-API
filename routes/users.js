@@ -3,9 +3,11 @@ const morgan = require('morgan');
 const router = express.Router();
 const User = require('../models').User;
 const Sequelize = require('sequelize');
+const authenticate = require('./authenticate');
+const bcrypt = require('bcryptjs');
 
 // Send a GET request to /api/users to return the currently authenticated user
-router.get('/', (req, res, next) => {
+router.get('/', authenticate, (req, res, next) => {
   User.findOne({ where: { emailAddress: req.body.emailAddress } })
   .then((users) => {
   res.status(200).json({ users });
@@ -22,13 +24,14 @@ router.post('/', (req, res, next) => {
       emailAddress: req.body.emailAddress,
       password: req.body.password
       };
+      newUser.password = bcrypt.hashSync(newUser.password);
         User.create(newUser)
           .then (() => {
             res.location('/');
             res.status(201).end();
         }).catch((err) => {
           console.log(err);
-            if(err.name === "SequelizeValidationError" || "SequelizeUniqueConstraintError") {
+            if(err.name === "SequelizeValidationError" || err.name === "SequelizeUniqueConstraintError" ) {
                 res.status(400).json({
                 err: err.errors
               })

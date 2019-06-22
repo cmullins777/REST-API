@@ -5,7 +5,6 @@ const express = require('express');
 const Sequelize = require('sequelize');
 const morgan = require('morgan');
 const models = require('./models').sequelize;
-const bodyParser = require('body-parser');
 
 /*  ASK about this - what is it doing?
 let path = require('path');
@@ -37,8 +36,6 @@ app.use(morgan('dev'));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
 
 // variable to enable global error logging
 const enableGlobalErrorLogging = process.env.ENABLE_GLOBAL_ERROR_LOGGING === 'true';

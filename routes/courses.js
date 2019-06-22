@@ -48,7 +48,7 @@ router.get('/:id', asyncHandler(async (req, res, next) => {
 router.post('/', asyncHandler(async(req, res, next) => {
     Course.create(req.body)
       .then(course => {
-        res.redirect('/api/courses/' + course.id);
+        res.location('/api/courses/' + course.id);
         res.status(201).end();
       }).catch((err) => {
         if(err.name === "SequelizeValidationError") {
@@ -65,7 +65,7 @@ router.post('/', asyncHandler(async(req, res, next) => {
 // Send a PUT request to /api/courses/:id to UPDATE a course
 router.put('/:id', asyncHandler(async(req, res, next) => {
   Course.findOne({
-    where: { id: req.body.id }
+    where: { id: req.params.id }
     }).then((course) => {
       if(course) {
         course.update(req.body);
@@ -95,12 +95,11 @@ router.delete("/:id", asyncHandler(async(req, res, next) => {
     }).then((course) => {
       if(course){
         return course.destroy();
-      } else {
-        throw err;
       }
     }).then(()=> {
-        res.redirect("/courses");
+        res.status(204).end();
     }).catch((err) => {
+      err.status = 400;
        next(err);
     });
 }));
