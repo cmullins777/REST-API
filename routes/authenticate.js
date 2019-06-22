@@ -3,7 +3,6 @@
 const express = require('express');
 const User = require('../models').User;
 const auth = require('basic-auth');
-const bcryptjs = require('bcryptjs');
 
 /**
  * Middleware to authenticate the request using Basic Authentication.
@@ -18,11 +17,10 @@ module.exports = (req, res, next) => {
   const credentials = auth(req);
 
   if (credentials) {
-
     User.findOne({ where: { emailAddress: credentials.name } })
       .then (user => {
         if (user) {
-          const authenticated = bcryptjs.compareSync(credentials.pass, user.password);
+          let authenticated = bcryptjs.compareSync(credentials.pass, user.password);
           if (authenticated) {
             req.currentUser = user;
             next();
@@ -32,13 +30,13 @@ module.exports = (req, res, next) => {
             res.json( { message: message} );
           }
         } else {
-          message = `User not found for username: ${credentials.name}`;
+          message = `Email not found for user: ${credentials.name}`;
           res.status(401);
           res.json( { message: message });
         }
       });
   } else {
-    const err = new Error('Access denied');
+    const err = new Error('Please enter a valid user name and email address');
     err.status = 401;
     next(err);
   }
