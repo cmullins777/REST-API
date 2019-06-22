@@ -5,6 +5,7 @@ const express = require('express');
 const Sequelize = require('sequelize');
 const morgan = require('morgan');
 const models = require('./models').sequelize;
+const auth = require('basic-auth');
 
 /*  ASK about this - what is it doing?
 let path = require('path');
@@ -44,6 +45,7 @@ const enableGlobalErrorLogging = process.env.ENABLE_GLOBAL_ERROR_LOGGING === 'tr
 app.use('/api', require('./routes/index'));
 app.use('/api/courses', require('./routes/courses'));
 app.use('/api/users', require('./routes/users'));
+
 
 // send 404 if no other route matched
 app.use((req, res, next) => {
