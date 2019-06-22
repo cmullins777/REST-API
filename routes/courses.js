@@ -69,23 +69,23 @@ router.put('/:id', authenticate, asyncHandler(async(req, res, next) => {
     where: { id: req.params.id }
     }).then((course) => {
       if(course) {
-        course.update(req.body);
-        res.location("/courses/" + req.body.id);
-        res.status(204).end();
-    } else {
+        if(err.name === "SequelizeValidationError") {
+          res.status(400).json({
+            err: err.errors
+        });
+        } else {
+          course.update(req.body);
+          res.location("/courses/" + req.body.id);
+          res.status(204).end();
+        }
+      } else {
         err.status = 400;
         next(err);
-    }
+      }
     }).catch((err) => {
       console.log(err);
-      if(err.name === "SequelizeValidationError") {
-        res.status(400).json({
-          err: err.errors
-      });
-    } else {
-        err.status = 500;
-        next(err);
-      }
+      err.status = 500;
+      next(err);
     });
 }));
 

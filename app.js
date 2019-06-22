@@ -57,7 +57,8 @@ app.use((req, res, next) => {
 // setup a global error handler
 app.use((err, req, res, next) => {
   if (enableGlobalErrorLogging) {
-    console.error(`Global error handler: ${JSON.stringify(err.stack)}`);
+    //console.error(`Global error handler: ${JSON.stringify(err.stack)}`);
+    console.error(`Global error handler: ${err.stack}`);
   }
 
   res.status(err.status || 500);

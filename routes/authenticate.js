@@ -23,11 +23,11 @@ module.exports = (req, res, next) => {
         if (user) {
           let authenticated = bcryptjs.compareSync(credentials.pass, user.password);
           if (authenticated) {
-            console.log(`Authentication successful for username: ${user.username}`);
+            console.log(`Authentication successful for username: ${user.emailAddress}`);
             req.currentUser = user;
             next();
           } else {
-            message = `Authentication failure for username: ${user.username}`;
+            message = `Authentication failure for username: ${user.emailAddress}`;
             res.status(401);
             res.json( { message: message} );
           }
@@ -38,7 +38,7 @@ module.exports = (req, res, next) => {
         }
       });
   } else {
-    const err = new Error('Please enter a valid user name and email address');
+    const err = new Error('Please enter a valid email address and password');
     err.status = 401;
     next(err);
   }
