@@ -7,13 +7,14 @@ const authenticate = require('./authenticate');
 const bcrypt = require('bcryptjs');
 
 // Send a GET request to /api/users to return the currently authenticated user
-router.get('/', authenticate, (req, res, next) => {
-  User.findOne({ where: { emailAddress: req.body.emailAddress } })
-  .then((users) => {
-  res.status(200).json({ users });
-}).catch((err) => {
-  next(err);
-});
+router.get('/', authenticate, (req, res) => {
+  res.json({
+    id: req.currentUser.id,
+    firstName: req.currentUser.firstName,
+    lastName: req.currentUser.lastName,
+    emailAddress: req.currentUser.emailAddress
+  });
+  res.status(200);
 });
 
 // Send a POST request to /api/users to CREATE a new user, sets Location header to "/", returns no content

@@ -3,6 +3,7 @@ const router = express.Router();
 const Course = require('../models').Course;
 const User = require('../models').User;
 const Sequelize = require('sequelize');
+const authenticate = require('./authenticate');
 
 function asyncHandler(cb) {
   return async (req, res, next) => {
@@ -45,7 +46,7 @@ router.get('/:id', asyncHandler(async (req, res, next) => {
 }));
 
 // Send a POST request to /api/courses to CREATE a new course, sets Location header to course URI
-router.post('/', asyncHandler(async(req, res, next) => {
+router.post('/', authenticate, asyncHandler(async(req, res, next) => {
     Course.create(req.body)
       .then(course => {
         res.location('/api/courses/' + course.id);
@@ -63,7 +64,7 @@ router.post('/', asyncHandler(async(req, res, next) => {
 }));
 
 // Send a PUT request to /api/courses/:id to UPDATE a course
-router.put('/:id', asyncHandler(async(req, res, next) => {
+router.put('/:id', authenticate, asyncHandler(async(req, res, next) => {
   Course.findOne({
     where: { id: req.params.id }
     }).then((course) => {
@@ -89,7 +90,7 @@ router.put('/:id', asyncHandler(async(req, res, next) => {
 }));
 
 // Send a DELETE request to /api/courses/:id to DELETE a course
-router.delete("/:id", asyncHandler(async(req, res, next) => {
+router.delete("/:id", authenticate, asyncHandler(async(req, res, next) => {
   Course.findOne({
     where: { id: req.params.id},
     }).then((course) => {

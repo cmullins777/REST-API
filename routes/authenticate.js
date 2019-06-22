@@ -3,6 +3,7 @@
 const express = require('express');
 const User = require('../models').User;
 const auth = require('basic-auth');
+const bcryptjs = require('bcryptjs');
 
 /**
  * Middleware to authenticate the request using Basic Authentication.
@@ -22,6 +23,7 @@ module.exports = (req, res, next) => {
         if (user) {
           let authenticated = bcryptjs.compareSync(credentials.pass, user.password);
           if (authenticated) {
+            console.log(`Authentication successful for username: ${user.username}`);
             req.currentUser = user;
             next();
           } else {
