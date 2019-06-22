@@ -64,14 +64,16 @@ router.post('/', authenticate, asyncHandler(async(req, res, next) => {
 }));
 
 // Send a PUT request to /api/courses/:id to UPDATE a course
-router.put('/:id', authenticate, asyncHandler(async(req, res, next) => {
+router.put('/:id', authenticate, (req, res, next) => {
   Course.findOne({
-    where: { id: req.params.id }
+    where: { id: req.body.id },
     }).then((course) => {
       if(course) {
+        const err = new Error;
+        console.log(course);
         if(err.name === "SequelizeValidationError") {
           console.log(err);
-          const err = new Error;
+        //  const err = new Error;
           res.status(400).json({
             err: err.errors
         });
@@ -89,7 +91,7 @@ router.put('/:id', authenticate, asyncHandler(async(req, res, next) => {
       err.status = 500;
       next(err);
     });
-}));
+});
 
 // Send a DELETE request to /api/courses/:id to DELETE a course
 router.delete("/:id", authenticate, asyncHandler(async(req, res, next) => {
