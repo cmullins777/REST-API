@@ -68,28 +68,22 @@ router.put('/:id', authenticate, (req, res, next) => {
   Course.findOne({
     where: { id: req.body.id },
     }).then((course) => {
-      if(course) {
-        const err = new Error;
-        console.log(course);
-        if(err.name === "SequelizeValidationError") {
-          console.log(err);
-        //  const err = new Error;
-          res.status(400).json({
-            err: err.errors
-        });
-        } else {
-          course.update(req.body);
-          res.location("/courses/" + req.body.id);
-          res.status(204).end();
-        }
+      if(!course) {
+        res.status(404).json({message: 'Course Not Found'});
       } else {
-        err.status = 400;
-        next(err);
+        let err = new Error;
+        if(err.name === "SequelizeValidationError") {
+          res.status(400).json({
+          err: err.errors
+          });
+        }
+        course.update(req.body);
+        res.location("/courses/" + req.body.id);
+        res.status(204).end();
       }
-    }).catch((err) => {
-      console.log(err);
-      err.status = 500;
-      next(err);
+      }).catch((err) => {
+         err.status = 500;
+         next(err);
     });
 });
 
