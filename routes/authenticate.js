@@ -16,7 +16,7 @@ module.exports = (req, res, next) => {
 
   // Get the user's credentials from the Authorization header.
   const credentials = auth(req);
-
+  // Check for User by email and alert errors where not authenticated
   if (credentials) {
     User.findOne({ where: { emailAddress: credentials.name } })
       .then (user => {
@@ -27,7 +27,7 @@ module.exports = (req, res, next) => {
             req.currentUser = user;
             next();
           } else {
-            message = `Authentication failure for username: ${user.emailAddress}`;
+            message = `Authentication failure for user at: ${user.emailAddress}`;
             res.status(401);
             res.json( { message: message} );
           }

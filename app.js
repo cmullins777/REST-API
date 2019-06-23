@@ -7,12 +7,7 @@ const morgan = require('morgan');
 const models = require('./models').sequelize;
 const auth = require('basic-auth');
 
-/*  ASK about this - what is it doing?
-let path = require('path');
-const records = path + './fsjstd-restapi.db';
-*/
-
-// construct the database  - ASK about this too
+// Construct the database
 const sequelize = new Sequelize({
   dialect: "sqlite",
   storage: "./fsjstd-restapi.db"
@@ -31,7 +26,6 @@ sequelize
 // create the Express app
 const app = express();
 
-
 // setup morgan which gives us http request logging
 app.use(morgan('dev'));
 
@@ -46,7 +40,6 @@ app.use('/api', require('./routes/index'));
 app.use('/api/courses', require('./routes/courses'));
 app.use('/api/users', require('./routes/users'));
 
-
 // send 404 if no other route matched
 app.use((req, res, next) => {
   const err = new Error("Not Found");
@@ -60,7 +53,6 @@ app.use((err, req, res, next) => {
     //console.error(`Global error handler: ${JSON.stringify(err.stack)}`);
     console.error(`Global error handler: ${err.stack}`);
   }
-
   res.status(err.status || 500);
   res.json({
     error: {
@@ -69,10 +61,10 @@ app.use((err, req, res, next) => {
   })
 });
 
-// set our port
+// set the port
 app.set('port', process.env.PORT || 5000);
 
-// start listening on our port
+// start listening on port
 const server = app.listen(app.get('port'), () => {
   console.log(`Express server is listening on port ${server.address().port}`);
 });
