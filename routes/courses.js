@@ -4,17 +4,7 @@ const Course = require('../models').Course;
 const User = require('../models').User;
 const Sequelize = require('sequelize');
 const authenticate = require('./authenticate');
-/*
-function asyncHandler(cb) {
-  return async (req, res, next) => {
-    try {
-      await cb(req, res, next);
-    } catch(err) {
-      next(err);
-    }
-  }
-};
-*/
+
 // Send a GET request to /api/courses to READ a list of courses and their user owners
 router.get('/', (req, res, next) => {
     Course.findAll({
@@ -39,6 +29,7 @@ router.get('/:id', (req, res, next) => {
         if(course) {
           res.status(200).json({ course: course });
       } else {
+        const err = new Error("Course not found");
         err.status = 400;
         next(err);
       }
